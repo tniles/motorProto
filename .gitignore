@@ -1,0 +1,10 @@
+build-motorProto-Ubuntu-Qt6-Desktop-Debug
+build-motorProto-Ubuntu-Qt6-Desktop-Profile
+build-motorProto-Ubuntu-Qt6-Desktop-Release
+*.swp
+*.o
+moc_*.cpp
+ui_*.h
+*.user
+bug*
+temp*
