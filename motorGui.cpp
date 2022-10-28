@@ -17,7 +17,7 @@
 /* Main Application Window */
 MotorGui::MotorGui()
 {
-    serialPortLabel     = new QLabel(tr("Serial port:"));
+    serialPortLabel     = new QLabel(tr("Select port:"));
     serialPortComboBox  = new QComboBox;
     waitResponseLabel   = new QLabel(tr("Wait response (ms):"));
     waitResponseSpinBox = new QSpinBox;
@@ -27,23 +27,23 @@ MotorGui::MotorGui()
     statusLabel         = new QLabel(tr("Status: Not running."));
     runButton           = new QPushButton(tr("Start"));
 
+    /* Go gather port info for currently connected devices.
+     * Need to add functionality to detect dynamic changes since
+     * as written this is done only once on app startup. */
+    const auto sInfo = QSerialPortInfo::availablePorts();
+    for (const QSerialPortInfo &info : sInfo)
+    {
+        serialPortComboBox->addItem(info.portName());
+    }
+
     createMenu();
     createHorizontalGroupBoxForSerial();
     createHorizontalGroupBox();
-
-    /*
-    buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
-                                     | QDialogButtonBox::Cancel);
-
-    connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
-    connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
-    */
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->setMenuBar(menuBar);
     mainLayout->addWidget(horizontalGroupBoxForSerial);
     mainLayout->addWidget(horizontalGroupBox);
-    //mainLayout->addWidget(buttonBox);
     setLayout(mainLayout);
 
     setWindowTitle(tr("Prototype Motor Controller"));
@@ -108,7 +108,7 @@ void MotorGui::createHorizontalGroupBoxForSerial()
     layout->addWidget(serialPortComboBox,     0, 1);
     layout->addWidget(waitResponseLabel,      1, 0);
     layout->addWidget(waitResponseSpinBox,    1, 1);
-    layout->addWidget(runButton,              4, 2, 2, 1);
+    layout->addWidget(runButton,              0, 2, 2, 1);
     layout->addWidget(requestLabel,           2, 0);
     layout->addWidget(requestLineEdit,        2, 1, 1, 3);
     layout->addWidget(trafficLabel,           3, 0, 1, 4);
@@ -123,10 +123,10 @@ void MotorGui::createHorizontalGroupBoxForSerial()
 
     serialPortComboBox->setFocus();
 
-    connect(runButton, &QPushButton::clicked, this, &MotorGui::transaction);
-    connect(&sthread, &SenderThread::response, this, &MotorGui::showResponse);
-    connect(&sthread, &SenderThread::error,    this, &MotorGui::processError);
-    connect(&sthread, &SenderThread::timeout,  this, &MotorGui::processTimeout);
+    connect(runButton, &QPushButton::clicked,   this, &MotorGui::transaction);
+    connect(&sthread,  &SenderThread::response, this, &MotorGui::showResponse);
+    connect(&sthread,  &SenderThread::error,    this, &MotorGui::processError);
+    connect(&sthread,  &SenderThread::timeout,  this, &MotorGui::processTimeout);
 }
 
 
