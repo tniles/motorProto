@@ -1,10 +1,12 @@
-QT += core widgets gui
+QT += core widgets gui serialport
 
-# requires(qtConfig(combobox))
+requires(qtConfig(combobox))
 
-HEADERS     = motorGui.h
-SOURCES     = motorGui.cpp \
-              main.cpp
+HEADERS     +=  motorGui.h \
+                senderThread.h
+SOURCES     +=  main.cpp \
+                motorGui.cpp \
+                senderThread.cpp
 
 # install
 target.path = ./build-Qt6-Desktop
