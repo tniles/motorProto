@@ -3,6 +3,8 @@
 /***************************************************************************/
 
 #include <QApplication>
+#include <QDebug>
+//    qInfo() << "reached step 1";
 
 #include "motorGui.h"
 

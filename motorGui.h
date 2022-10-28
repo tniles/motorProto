@@ -31,17 +31,24 @@ public:
 private:
     void createMenu();
     void createHorizontalGroupBox();
+    void createHorizontalGroupBoxForSerial();
     void createGridGroupBox();
     void createFormGroupBox();
 
-#define NUM_BUTTONS (3)
+#define NUM_MOTOR_BUTTONS (3)
     QMenuBar *menuBar;
     QGroupBox *horizontalGroupBox;
-    QPushButton *buttons[NUM_BUTTONS];
+    QGroupBox *horizontalGroupBoxForSerial;
+    QPushButton *buttons[NUM_MOTOR_BUTTONS];
     QDialogButtonBox *buttonBox;
+
+    QLabel *m_serialPortLabel = nullptr;
 
     QMenu *fileMenu;
     QAction *exitAction;
+
+    QMenu *aboutMenu;
+    QAction *aboutAction;
 };
 
 #endif // MOTORGUI_H
