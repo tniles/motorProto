@@ -7,6 +7,7 @@
 
 #include <QDialog>
 
+#include "receiverThread.h"
 #include "senderThread.h"
 
 
@@ -35,23 +36,32 @@ public:
     MotorGui();
 
 private slots:
+    /* For Tx */
     void transaction();
     void showResponse(const QString &str);
     void processError(const QString &str);
     void processTimeout(const QString &str);
+    /* For Rx */
+    void startReceiver();
+    void showRequest(const QString &s);
+    void processErrorRx(const QString &str);
+    void processTimeoutRx(const QString &str);
+    void setControlsEnabledRx();
 
 private:
     void createMenu();
-    void createHorizontalGroupBox();
-    void createHorizontalGroupBoxForSerial();
-    void createGridGroupBox();
-    void createFormGroupBox();
+    void createHorizontalGroupBoxCmds();
+    void createHorizontalGroupBoxSerialRx();
+    void createHorizontalGroupBoxSerialTx();
+    //void createGridGroupBox();
+    //void createFormGroupBox();
     void setControlsEnabled(bool enable);
 
 #define NUM_MOTOR_BUTTONS (3)
     QMenuBar            *menuBar;
-    QGroupBox           *horizontalGroupBox;
-    QGroupBox           *horizontalGroupBoxForSerial;
+    QGroupBox           *horizontalGroupBoxCmds;
+    QGroupBox           *horizontalGroupBoxSerialRx;
+    QGroupBox           *horizontalGroupBoxSerialTx;
     QPushButton         *buttons[NUM_MOTOR_BUTTONS];
     QDialogButtonBox    *buttonBox;
 
@@ -60,6 +70,7 @@ private:
     QMenu   *aboutMenu;
     QAction *aboutAction;
 
+    /* For Tx */
     int         transactionCount        = 0;
     QLabel      *serialPortLabel        = nullptr;
     QComboBox   *serialPortComboBox     = nullptr;
@@ -71,7 +82,20 @@ private:
     QLabel      *statusLabel            = nullptr;
     QPushButton *runButton              = nullptr;
 
-    SenderThread sthread;
+    /* For Rx */
+    int         transactionCountRx      = 0;
+    QLabel      *serialPortLabelRx      = nullptr;
+    QComboBox   *serialPortComboBoxRx   = nullptr;
+    QLabel      *waitRequestLabelRx     = nullptr;
+    QSpinBox    *waitRequestSpinBoxRx   = nullptr;
+    QLabel      *responseLabelRx        = nullptr;
+    QLineEdit   *responseLineEditRx     = nullptr;
+    QLabel      *trafficLabelRx         = nullptr;
+    QLabel      *statusLabelRx          = nullptr;
+    QPushButton *runButtonRx            = nullptr;
+
+    SenderThread    sthread;
+    ReceiverThread  rthread;
 };
 
 
