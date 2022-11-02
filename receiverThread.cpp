@@ -94,7 +94,7 @@ void ReceiverThread::run()
     }
 
     int currentWaitTimeout = m_waitTimeout;
-    QString currentRespone = m_response;
+    QString currentResponse = m_response;
     m_mutex.unlock();
 
     QSerialPort serial;
@@ -122,7 +122,7 @@ void ReceiverThread::run()
                 requestData += serial.readAll();
 
             // write response
-            const QByteArray responseData = currentRespone.toUtf8();
+            const QByteArray responseData = currentResponse.toUtf8();
             serial.write(responseData);
             if (serial.waitForBytesWritten(m_waitTimeout))
             {
@@ -154,7 +154,7 @@ void ReceiverThread::run()
         }
 
         currentWaitTimeout = m_waitTimeout;
-        currentRespone = m_response;
+        currentResponse = m_response;
         m_mutex.unlock();
     }
 }

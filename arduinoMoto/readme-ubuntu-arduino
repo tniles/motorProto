@@ -1,0 +1,47 @@
+ 
+
+For Arduino IDE: 
+    apt-get install arduino
+    # will pull in additional arduino and avr libs
+
+However, this was crashing for me, with these errors:
+
+    Picked up JAVA_TOOL_OPTIONS: 
+    java.lang.UnsatisfiedLinkError: /usr/lib/x86_64-linux-gnu/liblistSerialsj.so.1.4.0: /usr/lib/x86_64-linux-gnu/liblistSerialsj.so.1.4.0: undefined symbol: sp_get_port_usb_vid_pid
+        at java.base/java.lang.ClassLoader$NativeLibrary.load0(Native Method)
+        at java.base/java.lang.ClassLoader$NativeLibrary.load(ClassLoader.java:2445)
+        at java.base/java.lang.ClassLoader$NativeLibrary.loadLibrary(ClassLoader.java:2501)
+        at java.base/java.lang.ClassLoader.loadLibrary0(ClassLoader.java:2700)
+        at java.base/java.lang.ClassLoader.loadLibrary(ClassLoader.java:2662)
+        at java.base/java.lang.Runtime.loadLibrary0(Runtime.java:830)
+        at java.base/java.lang.System.loadLibrary(System.java:1873)
+        at processing.app.Platform.<clinit>(Platform.java:143)
+        at java.base/java.lang.Class.forName0(Native Method)
+        at java.base/java.lang.Class.forName(Class.java:315)
+        at processing.app.BaseNoGui.initPlatform(BaseNoGui.java:514)
+        at processing.app.Base.<init>(Base.java:201)
+        at processing.app.Base.main(Base.java:141)
+    # On my system, $JAVA_TOOL_OPTIONS is currently undefined.
+
+So I went and installed the Suggested Packages from the 'arduino' apt-get:
+    apt-get install dfu-programmer avrdude-doc gcc-doc librhino-java libbcpg-java-doc libxz-java libcommons-io-java-doc libcommons-net-java-doc libjackson2-annotations-java-doc libjna-java-doc libcommons-csv-java libconversant-disruptor-java libdisruptor-java libgeronimo-jms-1.1-spec-java  libjackson2-dataformat-xml-java libjackson2-dataformat-yaml libjansi-java libjctools-java libjeromq-java libmail-java libwoodstox-java librsyntaxtextarea-java-doc libsemver-java-doc liblog4j1.2-java libxalan2-java-doc libbsf-java libxsltc-java libxerces2-java-doc libxml-commons-resolver1.1-java-doc libxmlgraphics-commons-java-doc
+
+Additional Suggested Packages NOT Installed:
+  apt-get ant-doc default-jdk | java-compiler | java-sdk antlr javacc junit junit4 jython libjdepend-java liboro-java java-compiler libbcel-java-doc bsh rhino liblog4j1.2-java-doc libmail-java-doc doc-html-w3
+    # But half of these are virtual, meaning they're not really a package and are provided by
+    # some other legit package. 
+
+So I installed: 
+    apt-get install default-jdk
+    # Still no joy.
+
+After a smish of googling, this is bug #1916278 (https://bugs.launchpad.net/ubuntu/+source/arduino/+bug/1916278). Fix with:
+    apt install libserialport0 patchelf
+    patchelf --add-needed /usr/lib/x86_64-linux-gnu/libserialport.so.0 /usr/lib/x86_64-linux-gnu/liblistSerialsj.so.1.4.0
+    # NOW IT WORKS!
+    # Also, confirmed that the Arduino IDE 2.0.0 AppImage (webdownload from arduino) still
+    # works, too. 
+
+
+
+

@@ -240,11 +240,11 @@ void MotorGui::startReceiver()
 void MotorGui::showRequest(const QString &s)
 {
     trafficLabelRx->setText(tr("Traffic, transaction #%1:"
-                               "\n\r-request: %2"
-                               "\n\r-response: %3")
+                               "\n\r-Received: %2")
+                               /*"\n\r-response: %3")*/
                             .arg(++transactionCountRx)
-                            .arg(s)
-                            .arg(responseLineEditRx->text()));
+                            .arg(s));
+                            /*.arg(responseLineEditRx->text()));*/
 }
 
 
