@@ -4,6 +4,7 @@
 
 #include <QtWidgets>
 #include <QComboBox>
+#include <QDebug>
 #include <QGridLayout>
 #include <QLabel>
 #include <QLineEdit>
@@ -22,7 +23,7 @@ MotorGui::MotorGui()
     serialPortComboBox  = new QComboBox;
     waitResponseLabel   = new QLabel(tr("Wait response (ms):"));
     waitResponseSpinBox = new QSpinBox;
-    requestLabel        = new QLabel(tr("Request:"));
+    requestLabel        = new QLabel(tr("Transmit this:"));
     requestLineEdit     = new QLineEdit(tr("Enter request here..."));
     trafficLabel        = new QLabel(tr("No traffic."));
     statusLabel         = new QLabel(tr("Status: Not running."));
@@ -118,7 +119,7 @@ void MotorGui::createHorizontalGroupBoxSerialTx()
 
     /* Configure Spinbox, ms */
     waitResponseSpinBox->setRange(1, 5000);
-    waitResponseSpinBox->setValue(1000);
+    waitResponseSpinBox->setValue(2000);
 
     horizontalGroupBoxSerialTx->setLayout(layout);
 
@@ -148,7 +149,7 @@ void MotorGui::createHorizontalGroupBoxSerialRx()
 
     /* Configure Spinbox, ms */
     waitRequestSpinBoxRx->setRange(1, 5000);
-    waitRequestSpinBoxRx->setValue(1000);
+    waitRequestSpinBoxRx->setValue(2000);
 
     horizontalGroupBoxSerialRx->setLayout(layout);
 
@@ -170,10 +171,13 @@ void MotorGui::createHorizontalGroupBoxSerialRx()
  ******************************************************************************/
 void MotorGui::transaction()
 {
+    //qDebug() << ("TX-transact!");
     setControlsEnabled(false);
 
     statusLabel->setText(tr("Status: Running, connected to port %1.")
                            .arg(serialPortComboBox->currentText()));
+
+    //qDebug() << ("TX-transact: Sending - ") << (requestLineEdit->text());
 
     sthread.transaction(serialPortComboBox->currentText(),
                          waitResponseSpinBox->value(),
@@ -191,11 +195,13 @@ void MotorGui::showResponse(const QString &str)
                             .arg(++transactionCount)
                             .arg(requestLineEdit->text())
                             .arg(str));
+    qDebug() << ("TX-showresp: #") << transactionCount << (" Contents: ") << str;
 }
 
 
 void MotorGui::processError(const QString &str)
 {
+    //qDebug() << ("TX-error!");
     setControlsEnabled(true);
     statusLabel->setText(tr("Status: Not running, %1.").arg(str));
     trafficLabel->setText(tr("No traffic."));
@@ -204,9 +210,10 @@ void MotorGui::processError(const QString &str)
 
 void MotorGui::processTimeout(const QString &str)
 {
+    //qDebug() << ("TX-timeout!");
     setControlsEnabled(true);
-    statusLabel->setText(tr("Status: Running, %1.").arg(str));
     trafficLabel->setText(tr("No traffic."));
+    statusLabel->setText(tr("Status: Running, %1.").arg(str));
 }
 
 
@@ -228,6 +235,7 @@ void MotorGui::setControlsEnabled(bool enable)
  ******************************************************************************/
 void MotorGui::startReceiver()
 {
+    //qDebug() << ("Rx go!");
     runButtonRx->setEnabled(false);
     statusLabel->setText(tr("Status: Running, connected to port %1.")
                            .arg(serialPortComboBox->currentText()));
@@ -239,6 +247,7 @@ void MotorGui::startReceiver()
 
 void MotorGui::showRequest(const QString &s)
 {
+    //qDebug() << ("Rx-showRequest!");
     trafficLabelRx->setText(tr("Traffic, transaction #%1:"
                                "\n\r-Received: %2")
                                /*"\n\r-response: %3")*/
@@ -250,17 +259,19 @@ void MotorGui::showRequest(const QString &s)
 
 void MotorGui::processErrorRx(const QString &str)
 {
+    //qDebug() << ("Rx-error!");
     setControlsEnabledRx();
-    statusLabelRx->setText(tr("Status: Not running, %1.").arg(str));
     trafficLabelRx->setText(tr("No traffic."));
+    statusLabelRx->setText(tr("Status: Not running, %1.").arg(str));
 }
 
 
 void MotorGui::processTimeoutRx(const QString &str)
 {
+    //qDebug() << ("Rx-timeout!");
     setControlsEnabledRx();
-    statusLabelRx->setText(tr("Status: Running, %1.").arg(str));
     trafficLabelRx->setText(tr("No traffic."));
+    statusLabelRx->setText(tr("Status: Running, %1.").arg(str));
 }
 
 

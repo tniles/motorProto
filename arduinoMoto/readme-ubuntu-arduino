@@ -1,5 +1,28 @@
  
 
+ 11/2/2022 NOTE: The below process is for the ubuntu package of arduino, which at time of
+ writing is version 1.8.19. A direct download from arduino.cc provides v2.x and appears to be 
+ a better IDE. Both can be installed simultaneously. I opted to override the desktop shortcut 
+ by first adding the *.AppImage (IDE download, from a zip folder) to my ~/bin directory, and 
+ then copying an edited arduino.desktop file from /usr/share/applications to my 
+ ~/.local/share/applications dir. This automagically updated the existing desktop/launcher 
+ icon. Another way to do this would be with the alacarte program (I did not do this, opted for
+ the manual method). See for more details: 
+     https://askubuntu.com/questions/1017298/gnome-shell-how-to-add-a-custom-favorite-app-change-favorites-path
+
+ NOTE: additional updates to the IDE can break the softlink to the ~/bin/arduino so after an
+ update be sure to check for a broken link. Otherwise it falls back to the system ide install.
+ After doing that, I also updated the custom desktop launcher file according to as the icon
+ had disappeared:
+ https://askubuntu.com/questions/1376132/main-menu-entries-created-with-alacarte-no-icons-in-dock
+
+
+
+###### ###### ###### ###### ###### ###### ###### 
+###### ###### ###### ###### ###### ###### ###### 
+###### ###### ###### ###### ###### ###### ###### 
+
+
 For Arduino IDE: 
     apt-get install arduino
     # will pull in additional arduino and avr libs

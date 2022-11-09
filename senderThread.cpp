@@ -133,7 +133,9 @@ void SenderThread::run()
             if (serial.waitForReadyRead(currentWaitTimeout))
             {
                 QByteArray responseData = serial.readAll();
-                while (serial.waitForReadyRead(10))
+                /* this was 10 but was causing a defect where the entire buffer
+                 * could not be read reliably within the timeout */
+                while (serial.waitForReadyRead(currentWaitTimeout)) 
                     responseData += serial.readAll();
 
                 const QString response = QString::fromUtf8(responseData);

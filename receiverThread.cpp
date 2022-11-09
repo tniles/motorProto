@@ -118,7 +118,9 @@ void ReceiverThread::run()
         {
             // read request
             QByteArray requestData = serial.readAll();
-            while (serial.waitForReadyRead(10))
+            /* this was 10 but was causing a defect where the entire buffer
+             * could not be read reliably within the timeout */
+            while (serial.waitForReadyRead(currentWaitTimeout))
                 requestData += serial.readAll();
 
             // write response
