@@ -37,45 +37,44 @@
 /* Main Application Window */
 MotorGui::MotorGui()
 {
-    /* For Tx */
+    /* Common */
     serialPortLabel     = new QLabel(tr("Select port:"));
     serialPortComboBox  = new QComboBox;
-    waitResponseLabel   = new QLabel(tr("Wait response (ms):"));
-    waitResponseSpinBox = new QSpinBox;
-    requestLabel        = new QLabel(tr("Transmit this:"));
-    requestLineEdit     = new QLineEdit(tr("Enter request here..."));
+    timeoutLabel        = new QLabel(tr("Timeout (ms):"));
+    timeoutSpinBox      = new QSpinBox;
+
+    /* For Tx */
+    requestLabel        = new QLabel(tr("Transmit:"));
+    requestLineEdit     = new QLineEdit(tr("Send 'RTS' to enable"));
     trafficLabel        = new QLabel(tr("No traffic."));
     statusLabel         = new QLabel(tr("Status: Not running."));
-    runButton           = new QPushButton(tr("Start"));
+    runButton           = new QPushButton(tr("Start Tx"));
 
     /* For Rx */
-    serialPortLabelRx       = new QLabel(tr("Select port:"));
-    serialPortComboBoxRx    = new QComboBox;
-    waitRequestLabelRx      = new QLabel(tr("Wait request (ms):"));
-    waitRequestSpinBoxRx    = new QSpinBox;
     responseLabelRx         = new QLabel(tr("Response:"));
-    responseLineEditRx      = new QLineEdit(tr("Standing by to receive..."));
+    responseLineEditRx      = new QLineEdit(tr("<Data Received>"));
     trafficLabelRx          = new QLabel(tr("No traffic."));
     statusLabelRx           = new QLabel(tr("Status: Not running."));
-    runButtonRx             = new QPushButton(tr("Start"));
+    runButtonRx             = new QPushButton(tr("Start Rx"));
  
     /* Go gather port info for currently connected devices.
-     * Need to add functionality to detect dynamic changes since
+     * XXX - Need to add functionality to detect dynamic changes since
      * as written this is done only once on app startup. */
     const auto sInfo = QSerialPortInfo::availablePorts();
     for (const QSerialPortInfo &info : sInfo)
     {
         serialPortComboBox->addItem(info.portName());
-        serialPortComboBoxRx->addItem(info.portName());
     }
 
     createMenu();
+    createHorizontalGroupBoxSerialPortSelect();
     createHorizontalGroupBoxSerialTx();
     createHorizontalGroupBoxSerialRx();
     createHorizontalGroupBoxCmds();
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->setMenuBar(menuBar);
+    mainLayout->addWidget(horizontalGroupBoxSerialPortSelect);
     mainLayout->addWidget(horizontalGroupBoxSerialTx);
     mainLayout->addWidget(horizontalGroupBoxSerialRx);
     mainLayout->addWidget(horizontalGroupBoxCmds);
@@ -121,28 +120,38 @@ void MotorGui::createHorizontalGroupBoxCmds()
 }
 
 
+void MotorGui::createHorizontalGroupBoxSerialPortSelect()
+{
+    horizontalGroupBoxSerialPortSelect = new QGroupBox(tr("Serial Port"));
+
+    auto *layout = new QGridLayout;
+    layout->addWidget(serialPortLabel);
+    layout->addWidget(serialPortComboBox,   0, 1);
+    layout->addWidget(timeoutLabel,         1, 0);
+    layout->addWidget(timeoutSpinBox,       1, 1);
+
+    /* Configure Spinbox, ms */
+    timeoutSpinBox->setRange(1, 5000);
+    timeoutSpinBox->setValue(2000);
+
+    horizontalGroupBoxSerialPortSelect->setLayout(layout);
+
+    serialPortComboBox->setFocus();
+}
+
+
 void MotorGui::createHorizontalGroupBoxSerialTx()
 {
     horizontalGroupBoxSerialTx = new QGroupBox(tr("Serial Port Tx"));
 
     auto *layout = new QGridLayout;
-    layout->addWidget(serialPortLabel);
-    layout->addWidget(serialPortComboBox,   0, 1);
-    layout->addWidget(waitResponseLabel,    1, 0);
-    layout->addWidget(waitResponseSpinBox,  1, 1);
-    layout->addWidget(runButton,            0, 2, 2, 1);
-    layout->addWidget(requestLabel,         2, 0);
-    layout->addWidget(requestLineEdit,      2, 1, 1, 3);
-    layout->addWidget(trafficLabel,         3, 0, 1, 4);
-    layout->addWidget(statusLabel,          4, 0, 1, 5);
-
-    /* Configure Spinbox, ms */
-    waitResponseSpinBox->setRange(1, 5000);
-    waitResponseSpinBox->setValue(2000);
+    layout->addWidget(requestLabel,         0, 0);
+    layout->addWidget(requestLineEdit,      0, 1, 1, -1);
+    layout->addWidget(trafficLabel,         1, 0, 1, 4);
+    layout->addWidget(statusLabel,          2, 0, 1, 5);
+    layout->addWidget(runButton,            3, 0, 1, -1);
 
     horizontalGroupBoxSerialTx->setLayout(layout);
-
-    serialPortComboBox->setFocus();
 
     connect(runButton, &QPushButton::clicked,   this, &MotorGui::transaction);
     connect(&sthread,  &SenderThread::response, this, &MotorGui::showResponse);
@@ -156,31 +165,22 @@ void MotorGui::createHorizontalGroupBoxSerialRx()
     horizontalGroupBoxSerialRx = new QGroupBox(tr("Serial Port Rx"));
 
     auto *layout = new QGridLayout;
-    layout->addWidget(serialPortLabelRx,    0, 0);
-    layout->addWidget(serialPortComboBoxRx, 0, 1);
-    layout->addWidget(waitRequestLabelRx,   1, 0);
-    layout->addWidget(waitRequestSpinBoxRx, 1, 1);
-    layout->addWidget(runButtonRx,          0, 2, 2, 1);
-    layout->addWidget(responseLabelRx,      2, 0);
-    layout->addWidget(responseLineEditRx,   2, 1, 1, 3);
-    layout->addWidget(trafficLabelRx,       3, 0, 1, 4);
-    layout->addWidget(statusLabelRx,        4, 0, 1, 5);
-
-    /* Configure Spinbox, ms */
-    waitRequestSpinBoxRx->setRange(1, 5000);
-    waitRequestSpinBoxRx->setValue(2000);
+    layout->addWidget(responseLabelRx,      0, 0);
+    layout->addWidget(responseLineEditRx,   0, 1, 1, -1);
+    layout->addWidget(trafficLabelRx,       1, 0, 1, 4);
+    layout->addWidget(statusLabelRx,        2, 0, 1, 5);
+    layout->addWidget(runButtonRx,          3, 0, 1, -1);
 
     horizontalGroupBoxSerialRx->setLayout(layout);
 
-    serialPortComboBox->setFocus();
     connect(runButtonRx, &QPushButton::clicked,     this, &MotorGui::startReceiver);
     connect(&rthread,    &ReceiverThread::request,  this, &MotorGui::showRequest);
     connect(&rthread,    &ReceiverThread::error,    this, &MotorGui::processErrorRx);
     connect(&rthread,    &ReceiverThread::timeout,  this, &MotorGui::processTimeoutRx);
 
-    connect(waitRequestSpinBoxRx, &QSpinBox::textChanged,  this, &MotorGui::setControlsEnabledRx);
-    connect(responseLineEditRx,   &QLineEdit::textChanged, this, &MotorGui::setControlsEnabledRx);
-    connect(serialPortComboBoxRx, &QComboBox::currentIndexChanged, \
+    connect(timeoutSpinBox, &QSpinBox::textChanged, this, &MotorGui::setControlsEnabledRx);
+    connect(responseLineEditRx, &QLineEdit::textChanged, this, &MotorGui::setControlsEnabledRx);
+    connect(serialPortComboBox, &QComboBox::currentIndexChanged, \
             this, &MotorGui::setControlsEnabledRx);
 }
 
@@ -199,7 +199,7 @@ void MotorGui::transaction()
     //qDebug() << ("TX-transact: Sending - ") << (requestLineEdit->text());
 
     sthread.transaction(serialPortComboBox->currentText(),
-                         waitResponseSpinBox->value(),
+                         timeoutSpinBox->value(),
                          requestLineEdit->text());
 }
 
@@ -240,7 +240,7 @@ void MotorGui::setControlsEnabled(bool enable)
 {
     runButton->setEnabled(enable);
     serialPortComboBox->setEnabled(enable);
-    waitResponseSpinBox->setEnabled(enable);
+    timeoutSpinBox->setEnabled(enable);
     requestLineEdit->setEnabled(enable);
 }
 
@@ -258,8 +258,8 @@ void MotorGui::startReceiver()
     runButtonRx->setEnabled(false);
     statusLabel->setText(tr("Status: Running, connected to port %1.")
                            .arg(serialPortComboBox->currentText()));
-    rthread.startReceiver(serialPortComboBoxRx->currentText(),
-                        waitRequestSpinBoxRx->value(),
+    rthread.startReceiver(serialPortComboBox->currentText(),
+                        timeoutSpinBox->value(),
                         responseLineEditRx->text());
 }
 

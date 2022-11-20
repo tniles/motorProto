@@ -70,15 +70,15 @@ private slots:
 private:
     void createMenu();
     void createHorizontalGroupBoxCmds();
+    void createHorizontalGroupBoxSerialPortSelect();
     void createHorizontalGroupBoxSerialRx();
     void createHorizontalGroupBoxSerialTx();
-    //void createGridGroupBox();
-    //void createFormGroupBox();
     void setControlsEnabled(bool enable);
 
 #define NUM_MOTOR_BUTTONS (3)
     QMenuBar            *menuBar;
     QGroupBox           *horizontalGroupBoxCmds;
+    QGroupBox           *horizontalGroupBoxSerialPortSelect;
     QGroupBox           *horizontalGroupBoxSerialRx;
     QGroupBox           *horizontalGroupBoxSerialTx;
     QPushButton         *buttons[NUM_MOTOR_BUTTONS];
@@ -89,12 +89,14 @@ private:
     QMenu   *aboutMenu;
     QAction *aboutAction;
 
-    /* For Tx */
-    int         transactionCount        = 0;
+    /* Common */
     QLabel      *serialPortLabel        = nullptr;
     QComboBox   *serialPortComboBox     = nullptr;
-    QLabel      *waitResponseLabel      = nullptr;
-    QSpinBox    *waitResponseSpinBox    = nullptr;
+    QLabel      *timeoutLabel           = nullptr;
+    QSpinBox    *timeoutSpinBox         = nullptr;
+
+    /* For Tx */
+    int         transactionCount        = 0;
     QLabel      *requestLabel           = nullptr;
     QLineEdit   *requestLineEdit        = nullptr;
     QLabel      *trafficLabel           = nullptr;
@@ -103,10 +105,6 @@ private:
 
     /* For Rx */
     int         transactionCountRx      = 0;
-    QLabel      *serialPortLabelRx      = nullptr;
-    QComboBox   *serialPortComboBoxRx   = nullptr;
-    QLabel      *waitRequestLabelRx     = nullptr;
-    QSpinBox    *waitRequestSpinBoxRx   = nullptr;
     QLabel      *responseLabelRx        = nullptr;
     QLineEdit   *responseLineEditRx     = nullptr;
     QLabel      *trafficLabelRx         = nullptr;
