@@ -67,17 +67,19 @@ MotorGui::MotorGui()
     }
 
     createMenu();
-    createHorizontalGroupBoxSerialPortSelect();
-    createHorizontalGroupBoxSerialTx();
-    createHorizontalGroupBoxSerialRx();
-    createHorizontalGroupBoxCmds();
+    createHBoxSerialPortSelect();
+    createHBoxSerialTx();
+    createHBoxSerialRx();
+    createHBoxDcMotorCmds();
+    createHBoxServoMotorCmds();
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->setMenuBar(menuBar);
-    mainLayout->addWidget(horizontalGroupBoxSerialPortSelect);
-    mainLayout->addWidget(horizontalGroupBoxSerialTx);
-    mainLayout->addWidget(horizontalGroupBoxSerialRx);
-    mainLayout->addWidget(horizontalGroupBoxCmds);
+    mainLayout->addWidget(hBoxSerialPortSelect);
+    mainLayout->addWidget(hBoxSerialTx);
+    mainLayout->addWidget(hBoxSerialRx);
+    mainLayout->addWidget(hBoxDcMotorCmds);
+    mainLayout->addWidget(hBoxServoMotorCmds);
     setLayout(mainLayout);
 
     setWindowTitle(tr("Prototype Motor Controller"));
@@ -102,9 +104,9 @@ void MotorGui::createMenu()
 }
 
 
-void MotorGui::createHorizontalGroupBoxCmds()
+void MotorGui::createHBoxDcMotorCmds()
 {
-    horizontalGroupBoxCmds = new QGroupBox(tr("Commands"));
+    hBoxDcMotorCmds = new QGroupBox(tr("BLDC Commands"));
 
     QHBoxLayout *layout = new QHBoxLayout;
 
@@ -116,13 +118,31 @@ void MotorGui::createHorizontalGroupBoxCmds()
         layout->addWidget(buttons[ii]);
     }
 
-    horizontalGroupBoxCmds->setLayout(layout);
+    hBoxDcMotorCmds->setLayout(layout);
 }
 
 
-void MotorGui::createHorizontalGroupBoxSerialPortSelect()
+void MotorGui::createHBoxServoMotorCmds()
 {
-    horizontalGroupBoxSerialPortSelect = new QGroupBox(tr("Serial Port"));
+    hBoxServoMotorCmds = new QGroupBox(tr("Servo Commands"));
+
+    QHBoxLayout *layout = new QHBoxLayout;
+
+    int ii = 0;
+    buttons[ii++] = new QPushButton(tr("CCW"));
+    buttons[ii++] = new QPushButton(tr("Stop"));
+    buttons[ii++] = new QPushButton(tr("CW"));
+    for (ii = 0; ii < NUM_MOTOR_BUTTONS; ii++) {
+        layout->addWidget(buttons[ii]);
+    }
+
+    hBoxServoMotorCmds->setLayout(layout);
+}
+
+
+void MotorGui::createHBoxSerialPortSelect()
+{
+    hBoxSerialPortSelect = new QGroupBox(tr("Serial Port"));
 
     auto *layout = new QGridLayout;
     layout->addWidget(serialPortLabel);
@@ -134,15 +154,15 @@ void MotorGui::createHorizontalGroupBoxSerialPortSelect()
     timeoutSpinBox->setRange(1, 5000);
     timeoutSpinBox->setValue(2000);
 
-    horizontalGroupBoxSerialPortSelect->setLayout(layout);
+    hBoxSerialPortSelect->setLayout(layout);
 
     serialPortComboBox->setFocus();
 }
 
 
-void MotorGui::createHorizontalGroupBoxSerialTx()
+void MotorGui::createHBoxSerialTx()
 {
-    horizontalGroupBoxSerialTx = new QGroupBox(tr("Serial Port Tx"));
+    hBoxSerialTx = new QGroupBox(tr("Serial Port Tx"));
 
     auto *layout = new QGridLayout;
     layout->addWidget(requestLabel,         0, 0);
@@ -151,7 +171,7 @@ void MotorGui::createHorizontalGroupBoxSerialTx()
     layout->addWidget(statusLabel,          2, 0, 1, 5);
     layout->addWidget(runButton,            3, 0, 1, -1);
 
-    horizontalGroupBoxSerialTx->setLayout(layout);
+    hBoxSerialTx->setLayout(layout);
 
     connect(runButton, &QPushButton::clicked,   this, &MotorGui::transaction);
     connect(&sthread,  &SenderThread::response, this, &MotorGui::showResponse);
@@ -160,9 +180,9 @@ void MotorGui::createHorizontalGroupBoxSerialTx()
 }
 
 
-void MotorGui::createHorizontalGroupBoxSerialRx()
+void MotorGui::createHBoxSerialRx()
 {
-    horizontalGroupBoxSerialRx = new QGroupBox(tr("Serial Port Rx"));
+    hBoxSerialRx = new QGroupBox(tr("Serial Port Rx"));
 
     auto *layout = new QGridLayout;
     layout->addWidget(responseLabelRx,      0, 0);
@@ -171,7 +191,7 @@ void MotorGui::createHorizontalGroupBoxSerialRx()
     layout->addWidget(statusLabelRx,        2, 0, 1, 5);
     layout->addWidget(runButtonRx,          3, 0, 1, -1);
 
-    horizontalGroupBoxSerialRx->setLayout(layout);
+    hBoxSerialRx->setLayout(layout);
 
     connect(runButtonRx, &QPushButton::clicked,     this, &MotorGui::startReceiver);
     connect(&rthread,    &ReceiverThread::request,  this, &MotorGui::showRequest);

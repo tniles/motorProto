@@ -69,18 +69,20 @@ private slots:
 
 private:
     void createMenu();
-    void createHorizontalGroupBoxCmds();
-    void createHorizontalGroupBoxSerialPortSelect();
-    void createHorizontalGroupBoxSerialRx();
-    void createHorizontalGroupBoxSerialTx();
+    void createHBoxSerialPortSelect();
+    void createHBoxSerialRx();
+    void createHBoxSerialTx();
     void setControlsEnabled(bool enable);
+    void createHBoxDcMotorCmds();
+    void createHBoxServoMotorCmds();
 
 #define NUM_MOTOR_BUTTONS (3)
     QMenuBar            *menuBar;
-    QGroupBox           *horizontalGroupBoxCmds;
-    QGroupBox           *horizontalGroupBoxSerialPortSelect;
-    QGroupBox           *horizontalGroupBoxSerialRx;
-    QGroupBox           *horizontalGroupBoxSerialTx;
+    QGroupBox           *hBoxSerialPortSelect;
+    QGroupBox           *hBoxSerialRx;
+    QGroupBox           *hBoxSerialTx;
+    QGroupBox           *hBoxDcMotorCmds;
+    QGroupBox           *hBoxServoMotorCmds;
     QPushButton         *buttons[NUM_MOTOR_BUTTONS];
     QDialogButtonBox    *buttonBox;
 
