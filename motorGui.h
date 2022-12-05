@@ -55,6 +55,9 @@ public:
     MotorGui();
 
 private slots:
+    /* For Menus */
+    void showAbout();
+    void showAboutQt();
     /* For Tx */
     void transaction();
     void showResponse(const QString &str);
@@ -90,6 +93,7 @@ private:
     QAction *exitAction;
     QMenu   *aboutMenu;
     QAction *aboutAction;
+    QAction *aboutQtAction;
 
     /* Common */
     QLabel      *serialPortLabel        = nullptr;

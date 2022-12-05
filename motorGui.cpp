@@ -95,12 +95,43 @@ void MotorGui::createMenu()
     menuBar->addMenu(fileMenu);
 
     aboutMenu = new QMenu(tr("&About"), this);
-    aboutAction = aboutMenu->addAction(tr("About Motor Proto"));
+    aboutAction = aboutMenu->addAction(tr("About MotorProto"));
+    aboutQtAction = aboutMenu->addAction(tr("About Qt"));
+    menuBar->addMenu(aboutMenu);
+
     menuBar->addMenu(aboutMenu);
 
     connect(exitAction, &QAction::triggered, this, &QDialog::accept);
-    // About exits app. Temporary until I create an About pop up.
-    connect(aboutAction, &QAction::triggered, this, &QDialog::accept);
+    connect(aboutAction, &QAction::triggered, this, &MotorGui::showAbout);
+    connect(aboutQtAction, &QAction::triggered, this, &MotorGui::showAboutQt);
+}
+
+
+//#define USE_NATIVE_QT_ABOUT
+void MotorGui::showAbout()
+{
+    QString myTitle = "<b>About MotorProto<b>";
+    QString myText  = "<center><i>MotorProto provides an interface for delivering commands to various motor types for prototyping purposes.<i><center>";
+
+    QMessageBox msgBox;
+    msgBox.setWindowModality( Qt::NonModal );
+
+#ifdef USE_NATIVE_QT_ABOUT
+    msgBox.about( this, myTitle, myText );
+#else
+    msgBox.setWindowTitle( myTitle );
+    msgBox.setText( myText );
+    msgBox.setStandardButtons( QMessageBox::Close );
+    msgBox.setDefaultButton( QMessageBox::Close );
+    msgBox.exec();
+#endif
+}
+
+
+void MotorGui::showAboutQt()
+{
+    QMessageBox msgBox;
+    msgBox.aboutQt( this, "<b>About Qt<b>" );
 }
 
 
