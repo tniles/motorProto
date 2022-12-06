@@ -150,6 +150,11 @@ void MotorGui::createHBoxDcMotorCmds()
     }
 
     hBoxDcMotorCmds->setLayout(layout);
+
+    ii = 0;
+    connect(buttons[ii++], &QPushButton::clicked, this, &MotorGui::motorDcSendReverse);
+    connect(buttons[ii++], &QPushButton::clicked, this, &MotorGui::motorDcSendStop);
+    connect(buttons[ii++], &QPushButton::clicked, this, &MotorGui::motorDcSendForward);
 }
 
 
@@ -168,6 +173,11 @@ void MotorGui::createHBoxServoMotorCmds()
     }
 
     hBoxServoMotorCmds->setLayout(layout);
+
+    ii = 0;
+    connect(buttons[ii++], &QPushButton::clicked, this, &MotorGui::motorSrvSendCcw);
+    connect(buttons[ii++], &QPushButton::clicked, this, &MotorGui::motorSrvSendStop);
+    connect(buttons[ii++], &QPushButton::clicked, this, &MotorGui::motorSrvSendCw);
 }
 
 
@@ -204,7 +214,11 @@ void MotorGui::createHBoxSerialTx()
 
     hBoxSerialTx->setLayout(layout);
 
-    connect(runButton, &QPushButton::clicked,   this, &MotorGui::transaction);
+    // Credit: 
+    // https://stackoverflow.com/a/22411267/1228878
+    // https://techoverflow.net/2018/02/20/how-to-fix-gcc-error-the-lambda-has-no-capture-default/
+    QString payload = "";
+    connect(runButton, &QPushButton::clicked,   this, [&](){ transaction(payload); });
     connect(&sthread,  &SenderThread::response, this, &MotorGui::showResponse);
     connect(&sthread,  &SenderThread::error,    this, &MotorGui::processError);
     connect(&sthread,  &SenderThread::timeout,  this, &MotorGui::processTimeout);
@@ -239,7 +253,7 @@ void MotorGui::createHBoxSerialRx()
 /*******************************************************************************
  * Tx Section
  ******************************************************************************/
-void MotorGui::transaction()
+void MotorGui::transaction(QString &payload)
 {
     //qDebug() << ("TX-transact!");
     setControlsEnabled(false);
@@ -247,11 +261,10 @@ void MotorGui::transaction()
     statusLabel->setText(tr("Status: Running, connected to port %1.")
                            .arg(serialPortComboBox->currentText()));
 
-    //qDebug() << ("TX-transact: Sending - ") << (requestLineEdit->text());
-
-    sthread.transaction(serialPortComboBox->currentText(),
+    qDebug() << ("TX-transact: Sending - ") << (payload.isEmpty() ? requestLineEdit->text() : payload);
+    sthread.transaction( serialPortComboBox->currentText(),
                          timeoutSpinBox->value(),
-                         requestLineEdit->text());
+                         ( (payload.isEmpty() ? requestLineEdit->text() : payload) ));
 }
 
 
@@ -315,14 +328,14 @@ void MotorGui::startReceiver()
 }
 
 
-void MotorGui::showRequest(const QString &s)
+void MotorGui::showRequest(const QString &str)
 {
     //qDebug() << ("Rx-showRequest!");
     trafficLabelRx->setText(tr("Traffic, transaction #%1:"
                                "\n\r-Received: %2")
                                /*"\n\r-response: %3")*/
                             .arg(++transactionCountRx)
-                            .arg(s));
+                            .arg(str));
                             /*.arg(responseLineEditRx->text()));*/
 }
 
@@ -355,4 +368,48 @@ void MotorGui::setControlsEnabledRx()
 /******************************************************************************/
 /* End Rx Section *************************************************************/
 /******************************************************************************/
+
+
+/*******************************************************************************
+ * Sending Commands
+ *******************************************************************************/
+
+void MotorGui::motorDcSendReverse()
+{
+    //qDebug() << ("Sending DC Rev");
+    QString payload = "DC,REV";
+    transaction( payload );
+}
+void MotorGui::motorDcSendStop()
+{
+    //qDebug() << ("Sending DC Stop");
+    QString payload = "DC,STOP";
+    transaction( payload );
+}
+void MotorGui::motorDcSendForward()
+{
+    //qDebug() << ("Sending DC Fwd");
+    QString payload = "DC,FWD";
+    transaction( payload );
+}
+
+void MotorGui::motorSrvSendCcw()
+{
+    //qDebug() << ("Sending Srv Ccw");
+    QString payload = "SRV,CCW";
+    transaction( payload );
+}
+void MotorGui::motorSrvSendStop()
+{
+    //qDebug() << ("Sending Srv Stop");
+    QString payload = "SRV,STOP";
+    transaction( payload );
+}
+void MotorGui::motorSrvSendCw()
+{
+    //qDebug() << ("Sending Srv Cw");
+    QString payload = "SRV,CW";
+    transaction( payload );
+}
+
 

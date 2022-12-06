@@ -59,16 +59,24 @@ private slots:
     void showAbout();
     void showAboutQt();
     /* For Tx */
-    void transaction();
+    void transaction(QString &payload);
     void showResponse(const QString &str);
     void processError(const QString &str);
     void processTimeout(const QString &str);
     /* For Rx */
     void startReceiver();
-    void showRequest(const QString &s);
+    void showRequest(const QString &str);
     void processErrorRx(const QString &str);
     void processTimeoutRx(const QString &str);
     void setControlsEnabledRx();
+    /* For Motor Commands */
+    void motorDcSendReverse();
+    void motorDcSendStop();
+    void motorDcSendForward();
+    void motorSrvSendCcw();
+    void motorSrvSendStop();
+    void motorSrvSendCw();
+
 
 private:
     void createMenu();
