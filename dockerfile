@@ -13,9 +13,11 @@ COPY receiver* /
 COPY sender* /
 COPY main* /
 
-# Run all commands to prep binary
+# Run all commands to prep containerized binary
 RUN qmake6
 RUN make all
+ENV XDG_RUNTIME_DIR=/tmp/xdg-runtime-root
+RUN mkdir -p "$XDG_RUNTIME_DIR" && chmod 700 "$XDG_RUNTIME_DIR"
 
 # Detail to the container how to run the app for execution
 CMD ["/motorProto"]
