@@ -1,10 +1,13 @@
+motorProto
 build-motorProto-Ubuntu-Qt6-Desktop-Debug
 build-motorProto-Ubuntu-Qt6-Desktop-Profile
 build-motorProto-Ubuntu-Qt6-Desktop-Release
 *.swp
 *.o
 moc_*.cpp
+moc_*.h
 ui_*.h
 *.user
+*.stash
 bug*
 temp*
